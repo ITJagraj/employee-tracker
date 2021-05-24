@@ -10,5 +10,5 @@ const db = mysql.createConnection(
       password: 'Bootcamp@123',
       database: 'employees_db'
     },
-    console.log('Connected to the election database.')
+    console.log('Connected to the employees_db database.')
   );
