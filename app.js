@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
-const Connection = require('mysql2/typings/mysql/lib/Connection');
 // Connect connection
 const db = mysql.createConnection(
   {
@@ -10,7 +9,7 @@ const db = mysql.createConnection(
     // Your MySQL username,
     user: 'root',
     // Your MySQL password
-    password: 'Bootcamp@123',
+    password: 'Itprofessional@31',
     database: 'employees_db'
   },
   console.log('Connected to the employees_db database.')
@@ -74,7 +73,10 @@ function options() {
 
 
 
+
 };
+
+options();
 // view all employees in the database
 function viewEmployees() {
   const query = 'SELECT * FROM employee'
@@ -114,35 +116,35 @@ function viewEmployees() {
 //Add an employee to the database
 async function addEmployee() {
   inquirer.prompt([
-      {
-          name: 'first_name',
-          type: 'input',
-          message: 'Enter in their first name.'
-      },
-      {
-          name: 'last_name',
-          type: 'input',
-          message: 'Enter in their last name.'
-      },
-      {
-          name: 'roles',
-          type: 'list',
-          message: 'What is their role?',
-          choices: await selectRoles()
-      }
-  ]).then(function(res) {
-      let rolesId = res.roles
-      
-      connection.query('INSERT INTO employee SET?', {
-          first_name: res.firstname,
-          last_name: res.lastname,
-          roles_id : rolesId
-      }, function (err) {
-          if (err) throw err 
-          console.table(res)
-          options();
-      })
-  })  
+    {
+      name: 'first_name',
+      type: 'input',
+      message: 'Enter in their first name.'
+    },
+    {
+      name: 'last_name',
+      type: 'input',
+      message: 'Enter in their last name.'
+    },
+    {
+      name: 'roles',
+      type: 'list',
+      message: 'What is their role?',
+      choices: await selectRoles()
+    }
+  ]).then(function (res) {
+    let rolesId = res.roles
+
+    connection.query('INSERT INTO employee SET?', {
+      first_name: res.firstname,
+      last_name: res.lastname,
+      roles_id: rolesId
+    }, function (err) {
+      if (err) throw err
+      console.table(res)
+      options();
+    })
+  })
 };
 
 
