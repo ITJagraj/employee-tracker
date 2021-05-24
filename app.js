@@ -77,8 +77,32 @@ function options() {
 };
 // view all employees in the database
 function viewEmployees() {
+  const query = 'SELECT * FROM employee'
+  Connection.query(query,(err, res) => {
+  if (err) {
+    throw err;
+  }
+  console.table(res);
+  options();
+})
+};
+
+//view all departments
+function viewEmployees() {
   const query = 'SELECT * FROM department'
-  Connection.query(query,(err, res) =>{
+  Connection.query(query,(err, res) => {
+  if (err) {
+    throw err;
+  }
+  console.table(res);
+  options();
+})
+};
+
+//view all roles
+function viewEmployees() {
+  const query = 'SELECT * FROM role';
+  Connection.query(query,(err, res) => {
   if (err) {
     throw err;
   }
