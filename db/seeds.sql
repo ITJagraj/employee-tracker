@@ -6,3 +6,12 @@ VALUES
 ('Maria', 'Hall', 4, 126),
 ('Linda', 'Martin', 5, 724),
 ('Taylor', 'Wilson', 6, 157);
+
+INSERT INTO department (name)
+VALUES 
+('Information Systems and Technology'),
+('Finance'),
+('Legal'),
+('Human Resources'),
+('Security'),
+('Sales');
