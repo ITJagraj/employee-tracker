@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const consoleTable = require('console.table')
+const consoleTable = require('console.table');
+const Connection = require('mysql2/typings/mysql/lib/Connection');
 // Connect connection
 const db = mysql.createConnection(
   {
@@ -73,5 +74,17 @@ function options() {
 
 
 
-}
+};
+// view all employees in the database
+function viewEmployees() {
+  const query = 'SELECT * FROM department'
+  Connection.query(query,(err, res) =>{
+  if (err) {
+    throw err;
+  }
+  console.table(res);
+  options();
+})
+};
+
 
