@@ -70,7 +70,7 @@ function options() {
         default:
           break;
       }
-      });
+    });
 
 
 
@@ -78,37 +78,71 @@ function options() {
 // view all employees in the database
 function viewEmployees() {
   const query = 'SELECT * FROM employee'
-  Connection.query(query,(err, res) => {
-  if (err) {
-    throw err;
-  }
-  console.table(res);
-  options();
-})
+  Connection.query(query, (err, res) => {
+    if (err) {
+      throw err;
+    }
+    console.table(res);
+    options();
+  })
 };
 
 //view all departments
 function viewEmployees() {
   const query = 'SELECT * FROM department'
-  Connection.query(query,(err, res) => {
-  if (err) {
-    throw err;
-  }
-  console.table(res);
-  options();
-})
+  Connection.query(query, (err, res) => {
+    if (err) {
+      throw err;
+    }
+    console.table(res);
+    options();
+  })
 };
 
 //view all roles
 function viewEmployees() {
   const query = 'SELECT * FROM role';
-  Connection.query(query,(err, res) => {
-  if (err) {
-    throw err;
-  }
-  console.table(res);
-  options();
-})
+  Connection.query(query, (err, res) => {
+    if (err) {
+      throw err;
+    }
+    console.table(res);
+    options();
+  })
+};
+
+//Add an employee to the database
+async function addEmployee() {
+  inquirer.prompt([
+      {
+          name: 'first_name',
+          type: 'input',
+          message: 'Enter in their first name.'
+      },
+      {
+          name: 'last_name',
+          type: 'input',
+          message: 'Enter in their last name.'
+      },
+      {
+          name: 'roles',
+          type: 'list',
+          message: 'What is their role?',
+          choices: await selectRoles()
+      }
+  ]).then(function(res) {
+      let rolesId = res.roles
+      
+      connection.query('INSERT INTO employee SET?', {
+          first_name: res.firstname,
+          last_name: res.lastname,
+          roles_id : rolesId
+      }, function (err) {
+          if (err) throw err 
+          console.table(res)
+          options();
+      })
+  })  
 };
 
 
