@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
 // Connect connection
-const db = mysql.createConnection(
+const connection = mysql.createConnection(
   {
     host: 'localhost',
     port: 3306,
@@ -15,7 +15,7 @@ const db = mysql.createConnection(
   console.log('Connected to the employees_db database.')
 );
 //connect to the sql server to sql db
-db.connect((err) => {
+connection.connect((err) => {
   if (err) throw err;
   console.log("connected to employees_db");
 })
@@ -38,7 +38,7 @@ function options() {
       }
     ])
     .then((answers) => {
-      switch (answer.action) {
+      switch (answers.action) {
         case 'View all employees':
           viewEmployees();
           break;
@@ -80,7 +80,7 @@ options();
 // view all employees in the database
 function viewEmployees() {
   const query = 'SELECT * FROM employee'
-  Connection.query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) {
       throw err;
     }
@@ -90,9 +90,9 @@ function viewEmployees() {
 };
 
 //view all departments
-function viewEmployees() {
+function viewDepartments() {
   const query = 'SELECT * FROM department'
-  Connection.query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) {
       throw err;
     }
@@ -102,9 +102,9 @@ function viewEmployees() {
 };
 
 //view all roles
-function viewEmployees() {
+function viewRoles() {
   const query = 'SELECT * FROM role';
-  Connection.query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) {
       throw err;
     }
@@ -114,7 +114,7 @@ function viewEmployees() {
 };
 
 //Add an employee to the database
-async function addEmployee() {
+function addEmployee() {
   inquirer.prompt([
     {
       name: 'first_name',
@@ -130,7 +130,7 @@ async function addEmployee() {
       name: 'roles',
       type: 'list',
       message: 'What is their role?',
-      choices: await selectRoles()
+
     }
   ]).then(function (res) {
     let rolesId = res.roles
@@ -146,5 +146,104 @@ async function addEmployee() {
     })
   })
 };
+//add a department
+function addDepartment() {
+
+  inquirer.prompt([
+    {
+      name: 'name',
+      type: 'input',
+      message: 'Enter the name of the department.'
+    }
+  ]).then(function (res) {
+    //let name = res
+    connection.promise().query('INSERT INTO department SET ?', {
+      name: res.name
+    }).then(() => console.log(`added department ${res.name}`))
+      .then(() => options())
+
+  })
+}
+//Add roles
+function addRole() {
+  connection.promise().query('SELECT * FROM department') //promise to make sure that mysql coonection is up and running
+  .then(([rows])=> {
+    let departments = rows;
+    const departmentList = departments.map(({id, name}) => ({
+      name: name,
+      value: id
+    }))
+
+    inquirer.prompt([
+      {
+        name: 'title',
+        type: 'input',
+        message: 'Enter the name of the roles .'
+      },
+      {
+        name: 'salary',
+        type: 'input',
+        message: 'Enter the salary of the role .'
+      },
+      {
+        name: 'department_id',
+        type: 'list',
+        message: 'Which department does the role belong to .',
+        choices: departmentList 
+      }
+    ]).then(function (res) {
+      //let name = res
+      connection.promise().query('INSERT INTO role SET ?', {
+        title: res.title,
+        salary: res.salary,
+        department_id: res.department_id
+      }).then(() => console.log(`added role ${res.title}`))
+        .then(() => options())
+  
+    })
+  }) 
+
+}
+
+//Update an employee
+function updateEmployee() {
+  connection.promise().query('SELECT * FROM department')
+  .then(([rows])=> {
+    let employee = rows;
+    const departmentList = departments.map(({id, name}) => ({
+      name: name,
+      value: id
+    }))
+
+    inquirer.prompt([
+      {
+        name: 'title',
+        type: 'input',
+        message: 'Enter the name of the roles .'
+      },
+      {
+        name: 'salary',
+        type: 'input',
+        message: 'Enter the salary of the role .'
+      },
+      {
+        name: 'department_id',
+        type: 'list',
+        message: 'Which department does the role belong to .',
+        choices: departmentList 
+      }
+    ]).then(function (res) {
+      //let name = res
+      connection.promise().query('INSERT INTO role SET ?', {
+        title: res.title,
+        salary: res.salary,
+        department_id: res.department_id
+      }).then(() => console.log(`added role ${res.title}`))
+        .then(() => options())
+  
+    })
+  }) 
+
+}
 
 
