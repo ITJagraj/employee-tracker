@@ -63,11 +63,8 @@ function options() {
         case 'Delete an employee':
           deleteEmployee();
           break;
-        case 'EXIT':
-          exitApp();
-          break;
         default:
-          break;
+          exit();
       }
     });
 
@@ -79,7 +76,7 @@ function options() {
 options();
 // view all employees in the database
 function viewEmployees() {
-  const query = 'SELECT * FROM employee'
+  const query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN  role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id ';
   connection.query(query, (err, res) => {
     if (err) {
       throw err;
@@ -103,7 +100,7 @@ function viewDepartments() {
 
 //view all roles
 function viewRoles() {
-  const query = 'SELECT * FROM role';
+  const query = 'SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id';
   connection.query(query, (err, res) => {
     if (err) {
       throw err;
@@ -113,39 +110,7 @@ function viewRoles() {
   })
 };
 
-//Add an employee to the database
-function addEmployee() {
-  inquirer.prompt([
-    {
-      name: 'first_name',
-      type: 'input',
-      message: 'Enter in their first name.'
-    },
-    {
-      name: 'last_name',
-      type: 'input',
-      message: 'Enter in their last name.'
-    },
-    {
-      name: 'roles',
-      type: 'list',
-      message: 'What is their role?',
 
-    }
-  ]).then(function (res) {
-    let rolesId = res.roles
-
-    connection.query('INSERT INTO employee SET?', {
-      first_name: res.firstname,
-      last_name: res.lastname,
-      roles_id: rolesId
-    }, function (err) {
-      if (err) throw err
-      console.table(res)
-      options();
-    })
-  })
-};
 //add a department
 function addDepartment() {
 
@@ -167,83 +132,145 @@ function addDepartment() {
 //Add roles
 function addRole() {
   connection.promise().query('SELECT * FROM department') //promise to make sure that mysql coonection is up and running
-  .then(([rows])=> {
-    let departments = rows;
-    const departmentList = departments.map(({id, name}) => ({
-      name: name,
-      value: id
-    }))
+    .then(([rows]) => {
+      let departments = rows;
+      const departmentList = departments.map(({ id, name }) => ({
+        name: name,
+        value: id
+      }))
 
-    inquirer.prompt([
-      {
-        name: 'title',
-        type: 'input',
-        message: 'Enter the name of the roles .'
-      },
-      {
-        name: 'salary',
-        type: 'input',
-        message: 'Enter the salary of the role .'
-      },
-      {
-        name: 'department_id',
-        type: 'list',
-        message: 'Which department does the role belong to .',
-        choices: departmentList 
-      }
-    ]).then(function (res) {
-      //let name = res
-      connection.promise().query('INSERT INTO role SET ?', {
-        title: res.title,
-        salary: res.salary,
-        department_id: res.department_id
-      }).then(() => console.log(`added role ${res.title}`))
-        .then(() => options())
-  
+      inquirer.prompt([
+        {
+          name: 'title',
+          type: 'input',
+          message: 'Enter the name of the roles .'
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'Enter the salary of the role .',
+          choices: departmentList
+        },
+        {
+          name: 'department_id',
+          type: 'list',
+          message: 'Which department does the role belong to .',
+          choices: departmentList
+        }
+      ]).then(function (res) {
+        //let name = res
+        console.log(res)
+        connection.promise().query('INSERT INTO role SET ?', {
+          title: res.title,
+          salary: res.salary,
+          department_id: res.department_id
+        }).then(() => console.log(`added role ${res.title}`))
+          .then(() => options())
+
+      })
     })
-  }) 
 
 }
 
 //Update an employee
-function updateEmployee() {
-  connection.promise().query('SELECT * FROM department')
-  .then(([rows])=> {
-    let employee = rows;
-    const departmentList = departments.map(({id, name}) => ({
-      name: name,
-      value: id
-    }))
+function updateRole() {
+  connection.promise().query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN  role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id')
+    .then(([rows]) => {
+      let employees = rows;
+      const employeeList = employees.map(({id, first_name, last_name}) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+      }))
 
-    inquirer.prompt([
-      {
-        name: 'title',
-        type: 'input',
-        message: 'Enter the name of the roles .'
-      },
-      {
-        name: 'salary',
-        type: 'input',
-        message: 'Enter the salary of the role .'
-      },
-      {
-        name: 'department_id',
-        type: 'list',
-        message: 'Which department does the role belong to .',
-        choices: departmentList 
-      }
-    ]).then(function (res) {
-      //let name = res
-      connection.promise().query('INSERT INTO role SET ?', {
-        title: res.title,
-        salary: res.salary,
-        department_id: res.department_id
-      }).then(() => console.log(`added role ${res.title}`))
-        .then(() => options())
-  
+      inquirer.prompt([
+        {
+          name: 'employeeId',
+          type: 'list',
+          message: 'Which employees do you want to update.',
+          choices: employeeList
+        }
+      ]).then(function (res) {
+        let employeeId = res.employeeId
+        connection.promise().query('SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id')
+          .then(([rows]) =>  {
+           let roles = rows;
+           const roleChoice = roles.map(({id, title}) => ({
+             name: title,
+             value: id
+           }));
+           prompt
+          })
+      })
+
     })
-  }) 
+}
+//Add an employee to the database
+function addEmployee() {
+  inquirer.prompt([
+    {
+      name: 'first_name',
+      type: 'input',
+      message: 'Enter in their first name.'
+    },
+    {
+      name: 'last_name',
+      type: 'input',
+      message: 'Enter in their last name.'
+    },
 
+  ]).then(function (res) {
+    let first_name = res.first_name
+    let last_name = res.last_name
+    connection.promise().query('SELECT role.id, role.title, role.salary, department.name FROM role LEFT JOIN department ON role.department_id = department.id ') //promise to make sure that mysql coonection is up and running
+      .then(([rows]) => {
+        let roles = rows;
+        const roleList = roles.map(({ id, title }) => ({
+          name: title,
+          value: id
+        }))
+
+        inquirer.prompt(
+          {
+            name: 'roleId',
+            type: 'list',
+            message: 'Select the roles.',
+            choices: roleList
+          }).then(function (res) {
+            let roleId = res.roleId
+            connection.promise().query('SELECT * FROM employee')
+              .then(([rows]) => {
+                let employees = rows
+                const managersList = employees.map(({ id, first_name, last_name }) => ({
+                  name: `${first_name} ${last_name}`,
+                  value: id
+                }))
+                managersList.unshift({ name: "none", value: null })
+                inquirer.prompt(
+                  {
+                    name: 'managerId',
+                    type: 'list',
+                    message: "Select the employee's manager.",
+                    choices: managersList
+                  }).then(function (res) {
+                    let employee = {
+                      manager_id: res.managerId,
+                      role_id: roleId,
+                      first_name,
+                      last_name
+                    }
+                    connection.promise().query('INSERT INTO employee SET?', employee)
+                  }).then(function () {
+                    console.log(`added ${first_name} ${last_name}`)
+                  })
+                  .then(() => options())
+              })
+          })
+      })
+  })
 }
 
-
+//EXIT function 
+function exit() {
+  console.log("exiting the application");
+  process.exit()
+}
