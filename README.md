@@ -13,3 +13,5 @@ The application is built with the following tools and packages:
 
 
 The following video shows the demonstration of the app!
+
+https://drive.google.com/file/d/15mKvCjhBYLqd3-BigbH818Jn9F8VqBFy/view
