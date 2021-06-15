@@ -7,6 +7,9 @@ This is a Node.js app built with Inuqirer and MySQL2 packages that simulates an 
 
 The application is built with the following tools and packages:
 
-MySQL & MySQL2 
-console.table dependencies 
-inquirer dependencies 
+1. MySQL & MySQL2 
+2. console.table dependencies 
+3. inquirer dependencies 
+
+
+The following video shows the demonstration of the app!
