@@ -16,5 +16,12 @@ The following video shows the demonstration of the app!
 
 https://drive.google.com/file/d/15mKvCjhBYLqd3-BigbH818Jn9F8VqBFy/view
 
-Screen Shot ![screen shot of employee tracker](https://user-images.githubusercontent.com/45189679/122057138-4ded3580-cdb8-11eb-887a-34b94d4c5451.png)
+# Screen Shot 
+![screen shot of employee tracker](https://user-images.githubusercontent.com/45189679/122057138-4ded3580-cdb8-11eb-887a-34b94d4c5451.png)
+
+# Resources
+
+1. Inquirer: https://www.npmjs.com/package/inquirer
+2. Console.table: https://www.npmjs.com/package/console.table
+3. mysql2: https://www.npmjs.com/package/mysql2
 
